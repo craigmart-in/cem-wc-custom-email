@@ -28,10 +28,29 @@ class cem_wc_download_instructions {
 
     public function __construct() {
         // add custom field to invoice email
-        add_action( 'woocommerce_email_after_order_table', array( $this, 'download_instrctions'), 10, 1 );
+        add_action( 'woocommerce_email_after_order_table', array( $this, 'coupon_code'), 10, 2 );
+        add_action( 'woocommerce_email_after_order_table', array( $this, 'download_instrctions'), 20, 2 );
     }
 
-    public function download_instrctions( $order ) {
+    public function coupon_code( $order, $sent_to_admin ) {
+        if ( $sent_to_admin == false ) {
+            return;
+        }
+
+        if( $order->get_used_coupons() ) {
+            $coupons_count = count( $order->get_used_coupons() );
+            $coupons_list = implode(', ', $order->get_used_coupons());
+
+            echo '<h3>Coupon Details</h3>';
+            echo '<p><strong>Coupons used (' . $coupons_count . ') :</strong> ' . $coupons_list . '</p>';
+        } // endif get_used_coupons
+    }
+
+    public function download_instrctions( $order, $sent_to_admin ) {
+        if ( $sent_to_admin) {
+            return;
+        }
+
         ?>
         <div>
             <h3><a href="https://www.talkitrockit.com/faq/#download-instructions" target="_blank">Download Instructions</a></h3>
