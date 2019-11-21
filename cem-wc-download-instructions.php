@@ -4,7 +4,7 @@
  * Plugin Name: CEM WC Download Instructions
  * Plugin URI: https://github.com/craigmart-in/
  * Description: Display download instructions in emails.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Craig Martin
  * Author URI: https://craigmart.in
  * Text Domain: cem-wc-download-instructions
@@ -47,10 +47,10 @@ class cem_wc_download_instructions {
     }
 
     public function download_instrctions( $order, $sent_to_admin ) {
-        if ( $sent_to_admin) {
+        if ( $sent_to_admin || $order->has_downloadable_item() === false) {
             return;
         }
-
+        
         ?>
         <div>
             <h3><a href="https://www.talkitrockit.com/faq/#download-instructions" target="_blank">Download Instructions</a></h3>
