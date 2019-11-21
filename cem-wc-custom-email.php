@@ -4,7 +4,7 @@
  * Plugin Name: CEM WC Custom Email
  * Plugin URI: https://github.com/craigmart-in/
  * Description: Customizes emails from woocommerce.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Craig Martin
  * Author URI: https://craigmart.in
  * Text Domain: cem-wc-custom-email
@@ -27,9 +27,10 @@ $GLOBALS['cem_wc_download_instructions'] = new cem_wc_download_instructions();
 class cem_wc_download_instructions {
 
     public function __construct() {
+        add_action('woocommerce_email', array( $this, 'alter_woocommerce_email_action_priority'), 10, 1);        
+
         // add custom field to invoice email
         add_action( 'woocommerce_email_after_order_table', array( $this, 'coupon_code'), 10, 2 );
-        add_action( 'woocommerce_email_after_order_table', array( $this, 'download_instrctions'), 20, 2 );
     }
 
     public function coupon_code( $order, $sent_to_admin ) {
@@ -46,19 +47,26 @@ class cem_wc_download_instructions {
         } // endif get_used_coupons
     }
 
+    public function alter_woocommerce_email_action_priority($wc_email) {
+        remove_action( 'woocommerce_email_order_details', array( $wc_email, 'order_downloads' ), 10 );
+        add_action( 'woocommerce_email_order_details', array( $wc_email, 'order_downloads' ), 8, 4 );
+        add_action( 'woocommerce_email_order_details', array( $this, 'download_instrctions'), 9, 2 );
+    }
+
     public function download_instrctions( $order, $sent_to_admin ) {
-        if ( $sent_to_admin || $order->has_downloadable_item() === false) {
-            return;
-        }
+        // Copied from class-wc-emails.php
+        $show_downloads = $order->has_downloadable_item() && $order->is_download_permitted() && ! $sent_to_admin && ! is_a( $email, 'WC_Email_Customer_Refunded_Order' );
+		if ( ! $show_downloads ) {
+			return;
+		}
         
         ?>
-        <div>
-            <h3><a href="https://www.talkitrockit.com/faq/#download-instructions" target="_blank">Download Instructions</a></h3>
-            <p>
-                Please make sure to be on a PC or Mac before downloading.<br/>
-                For best results, please do not use WiFi, a tablet, or a phone.
-            </p>
-        </div>
+        <h3><a href="https://www.talkitrockit.com/faq/#download-instructions" target="_blank">Download Instructions</a></h3>
+        <p>
+            Please make sure to be on a PC or Mac before downloading.<br/>
+            For best results, please do not use WiFi, a tablet, or a phone.
+        </p>
+        <br/>
         <?php
     }
     
