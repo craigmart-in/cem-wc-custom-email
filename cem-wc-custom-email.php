@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Plugin Name: CEM WC Download Instructions
+ * Plugin Name: CEM WC Custom Email
  * Plugin URI: https://github.com/craigmart-in/
- * Description: Display download instructions in emails.
- * Version: 1.0.1
+ * Description: Customizes emails from woocommerce.
+ * Version: 1.1.0
  * Author: Craig Martin
  * Author URI: https://craigmart.in
- * Text Domain: cem-wc-download-instructions
+ * Text Domain: cem-wc-custom-email
  */
 
 
